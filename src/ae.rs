@@ -40,10 +40,19 @@ impl SymbolTable {
     }
 
     fn find_symbol(&self, cumulative_value: usize) -> (usize, usize, usize) {
-        let mut symbol = MAX_SYMBOLS - 1;
-        while self.table[symbol] > cumulative_value {
-            symbol -= 1;
+        let mut low = 0;
+        let mut high = self.table.len() - 1;
+
+        while high != low {
+            let mid = (low + high) / 2;
+            if self.table[mid] <= cumulative_value {
+                low = mid + 1;
+            } else {
+                high = mid;
+            }
         }
+
+        let symbol = low - 1;
 
         (symbol, self.table[symbol], self.table[symbol + 1])
     }
