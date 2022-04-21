@@ -19,47 +19,295 @@
         "mean": {
           "confidence_interval": {
             "confidence_level": 0.95,
-            "lower_bound": 1537485.3168145963,
-            "upper_bound": 2332424.8892225605
+            "lower_bound": 7640444.313126884,
+            "upper_bound": 7707526.459845562
           },
-          "point_estimate": 1899875.4484945512,
-          "standard_error": 203332.2906282203
+          "point_estimate": 7673705.950002955,
+          "standard_error": 17142.701346559243
         },
         "median": {
           "confidence_interval": {
             "confidence_level": 0.95,
-            "lower_bound": 1105953.0028961748,
-            "upper_bound": 1364999.165
+            "lower_bound": 7604421.727272727,
+            "upper_bound": 7692393.7875
           },
-          "point_estimate": 1188567.7168627451,
-          "standard_error": 63154.53506139423
+          "point_estimate": 7650221.050811688,
+          "standard_error": 24501.411827005093
         },
         "median_abs_dev": {
           "confidence_interval": {
             "confidence_level": 0.95,
-            "lower_bound": 214166.28774928837,
-            "upper_bound": 525531.6776666221
+            "lower_bound": 117018.21829751087,
+            "upper_bound": 212136.99121381508
           },
-          "point_estimate": 324539.27202241466,
-          "standard_error": 76760.4261759252
+          "point_estimate": 165521.04335108327,
+          "standard_error": 24561.275186435258
         },
         "slope": {
           "confidence_interval": {
             "confidence_level": 0.95,
-            "lower_bound": 1037456.7709796148,
-            "upper_bound": 1097211.7455524742
+            "lower_bound": 7690159.008547766,
+            "upper_bound": 7778737.141017071
           },
-          "point_estimate": 1063298.9097945914,
-          "standard_error": 15305.260919785627
+          "point_estimate": 7735034.106236146,
+          "standard_error": 22533.431984037907
         },
         "std_dev": {
           "confidence_interval": {
             "confidence_level": 0.95,
-            "lower_bound": 1065647.0435708717,
-            "upper_bound": 2798146.820658706
+            "lower_bound": 147752.4726167186,
+            "upper_bound": 194861.3434350691
           },
-          "point_estimate": 2043813.458520705,
-          "standard_error": 436342.04747350427
+          "point_estimate": 172578.04255804443,
+          "standard_error": 12067.087998622708
+        }
+      }
+    },
+    "bazoopy/Decode random 64KB": {
+      "baseline": "base",
+      "fullname": "base/bazoopy/Decode random 64KB",
+      "criterion_benchmark_v1": {
+        "group_id": "bazoopy",
+        "function_id": "Decode random 64KB",
+        "value_str": null,
+        "throughput": {
+          "Bytes": 65536,
+          "Elements": null
+        },
+        "full_id": "bazoopy/Decode random 64KB",
+        "directory_name": "bazoopy/Decode random 64KB"
+      },
+      "criterion_estimates_v1": {
+        "mean": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 3030467.105311846,
+            "upper_bound": 3787881.567079061
+          },
+          "point_estimate": 3399173.849814517,
+          "standard_error": 193594.9009838399
+        },
+        "median": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 2224086.9305751836,
+            "upper_bound": 2879047.836765024
+          },
+          "point_estimate": 2501382.9203431373,
+          "standard_error": 175383.43698996928
+        },
+        "median_abs_dev": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 660138.9273980593,
+            "upper_bound": 1515281.127989816
+          },
+          "point_estimate": 1034747.626825,
+          "standard_error": 223912.8017525904
+        },
+        "slope": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 2004553.3928791708,
+            "upper_bound": 2189117.1255922816
+          },
+          "point_estimate": 2084401.8276518397,
+          "standard_error": 47016.95100205529
+        },
+        "std_dev": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 1652812.4095586748,
+            "upper_bound": 2182946.788418829
+          },
+          "point_estimate": 1952550.5778009084,
+          "standard_error": 136273.54199545414
+        }
+      }
+    },
+    "bazoopy/Decode random 8KB": {
+      "baseline": "base",
+      "fullname": "base/bazoopy/Decode random 8KB",
+      "criterion_benchmark_v1": {
+        "group_id": "bazoopy",
+        "function_id": "Decode random 8KB",
+        "value_str": null,
+        "throughput": {
+          "Bytes": 8192,
+          "Elements": null
+        },
+        "full_id": "bazoopy/Decode random 8KB",
+        "directory_name": "bazoopy/Decode random 8KB"
+      },
+      "criterion_estimates_v1": {
+        "mean": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 93696.8707350384,
+            "upper_bound": 105782.76181269056
+          },
+          "point_estimate": 98889.25694145529,
+          "standard_error": 3117.6867794169834
+        },
+        "median": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 88483.59238662131,
+            "upper_bound": 92907.59663865546
+          },
+          "point_estimate": 90680.66574175825,
+          "standard_error": 1320.5421647305045
+        },
+        "median_abs_dev": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 3701.250902546569,
+            "upper_bound": 8815.702401126355
+          },
+          "point_estimate": 6233.9279390508045,
+          "standard_error": 1428.2173677231306
+        },
+        "slope": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 87299.38579667377,
+            "upper_bound": 88277.65900542913
+          },
+          "point_estimate": 87727.19383731976,
+          "standard_error": 249.6264691466586
+        },
+        "std_dev": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 11880.434622269411,
+            "upper_bound": 48619.139780697995
+          },
+          "point_estimate": 31459.199743224348,
+          "standard_error": 10120.458251565697
+        }
+      }
+    },
+    "bazoopy/Decode zeroes 64KB": {
+      "baseline": "base",
+      "fullname": "base/bazoopy/Decode zeroes 64KB",
+      "criterion_benchmark_v1": {
+        "group_id": "bazoopy",
+        "function_id": "Decode zeroes 64KB",
+        "value_str": null,
+        "throughput": {
+          "Bytes": 65536,
+          "Elements": null
+        },
+        "full_id": "bazoopy/Decode zeroes 64KB",
+        "directory_name": "bazoopy/Decode zeroes 64KB"
+      },
+      "criterion_estimates_v1": {
+        "mean": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 1150765.4775577898,
+            "upper_bound": 1620377.7703473223
+          },
+          "point_estimate": 1359375.7020008976,
+          "standard_error": 120592.03397251607
+        },
+        "median": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 931651.356152478,
+            "upper_bound": 1043309.4581445992
+          },
+          "point_estimate": 977212.4342308352,
+          "standard_error": 29691.567653134316
+        },
+        "median_abs_dev": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 117906.37927573251,
+            "upper_bound": 258871.87683399508
+          },
+          "point_estimate": 180612.3290286502,
+          "standard_error": 36767.41180460353
+        },
+        "slope": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 887203.4301925887,
+            "upper_bound": 920375.1214174744
+          },
+          "point_estimate": 901733.6967354176,
+          "standard_error": 8489.388521915957
+        },
+        "std_dev": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 542866.4499795744,
+            "upper_bound": 1750214.3315406786
+          },
+          "point_estimate": 1212673.923295357,
+          "standard_error": 309799.1514346571
+        }
+      }
+    },
+    "bazoopy/Decode zeroes 8KB": {
+      "baseline": "base",
+      "fullname": "base/bazoopy/Decode zeroes 8KB",
+      "criterion_benchmark_v1": {
+        "group_id": "bazoopy",
+        "function_id": "Decode zeroes 8KB",
+        "value_str": null,
+        "throughput": {
+          "Bytes": 8192,
+          "Elements": null
+        },
+        "full_id": "bazoopy/Decode zeroes 8KB",
+        "directory_name": "bazoopy/Decode zeroes 8KB"
+      },
+      "criterion_estimates_v1": {
+        "mean": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 1189063.5561385714,
+            "upper_bound": 1213693.3420659418
+          },
+          "point_estimate": 1200587.3122217052,
+          "standard_error": 6298.392950987656
+        },
+        "median": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 1170965.8961038962,
+            "upper_bound": 1182315.83774073
+          },
+          "point_estimate": 1176352.9244031832,
+          "standard_error": 3124.4930138358714
+        },
+        "median_abs_dev": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 12086.728547089098,
+            "upper_bound": 24807.651645810172
+          },
+          "point_estimate": 17961.451544396838,
+          "standard_error": 3424.4041743270327
+        },
+        "slope": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 1211174.5341949968,
+            "upper_bound": 1256602.3178228356
+          },
+          "point_estimate": 1233803.8389102577,
+          "standard_error": 11579.3863430763
+        },
+        "std_dev": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 43962.903194468905,
+            "upper_bound": 79449.44199557562
+          },
+          "point_estimate": 63327.491734924435,
+          "standard_error": 9079.208723704964
         }
       }
     },
@@ -81,47 +329,295 @@
         "mean": {
           "confidence_interval": {
             "confidence_level": 0.95,
-            "lower_bound": 2572406.721994145,
-            "upper_bound": 2607846.4620766295
+            "lower_bound": 3964830.769624747,
+            "upper_bound": 4014279.8062100816
           },
-          "point_estimate": 2588008.31590234,
-          "standard_error": 9125.239102778254
+          "point_estimate": 3987831.0799530214,
+          "standard_error": 12702.67470957217
         },
         "median": {
           "confidence_interval": {
             "confidence_level": 0.95,
-            "lower_bound": 2560537.3493150687,
-            "upper_bound": 2573811.0
+            "lower_bound": 3935519.1433895407,
+            "upper_bound": 3963252.392156862
           },
-          "point_estimate": 2567979.1188080497,
-          "standard_error": 3475.4925216175516
+          "point_estimate": 3950409.266369624,
+          "standard_error": 7221.83115297847
         },
         "median_abs_dev": {
           "confidence_interval": {
             "confidence_level": 0.95,
-            "lower_bound": 23084.794810618056,
-            "upper_bound": 39127.443567088056
+            "lower_bound": 41012.37235188468,
+            "upper_bound": 80978.37823368382
           },
-          "point_estimate": 31554.942258465977,
-          "standard_error": 4127.5795571219805
+          "point_estimate": 60202.9373596563,
+          "standard_error": 10402.418030679848
         },
         "slope": {
           "confidence_interval": {
             "confidence_level": 0.95,
-            "lower_bound": 2569884.597026976,
-            "upper_bound": 2598999.331279887
+            "lower_bound": 3946427.265016086,
+            "upper_bound": 4030785.3482004832
           },
-          "point_estimate": 2583209.556568642,
-          "standard_error": 7421.333972857853
+          "point_estimate": 3985553.71470371,
+          "standard_error": 21676.034036880068
         },
         "std_dev": {
           "confidence_interval": {
             "confidence_level": 0.95,
-            "lower_bound": 43427.65340869364,
-            "upper_bound": 137468.0093684471
+            "lower_bound": 84765.94806316387,
+            "upper_bound": 168485.77670792968
           },
-          "point_estimate": 91659.65306042971,
-          "standard_error": 26572.342599000058
+          "point_estimate": 127428.09744330394,
+          "standard_error": 21853.371065411066
+        }
+      }
+    },
+    "bazoopy/Encode random 64KB": {
+      "baseline": "base",
+      "fullname": "base/bazoopy/Encode random 64KB",
+      "criterion_benchmark_v1": {
+        "group_id": "bazoopy",
+        "function_id": "Encode random 64KB",
+        "value_str": null,
+        "throughput": {
+          "Bytes": 65536,
+          "Elements": null
+        },
+        "full_id": "bazoopy/Encode random 64KB",
+        "directory_name": "bazoopy/Encode random 64KB"
+      },
+      "criterion_estimates_v1": {
+        "mean": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 4101734.9281889377,
+            "upper_bound": 4214183.653784614
+          },
+          "point_estimate": 4154193.713413619,
+          "standard_error": 28830.036007796552
+        },
+        "median": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 4042040.8333333335,
+            "upper_bound": 4109164.487012987
+          },
+          "point_estimate": 4069743.037442397,
+          "standard_error": 18247.48100980566
+        },
+        "median_abs_dev": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 93645.97388136288,
+            "upper_bound": 189883.36170648265
+          },
+          "point_estimate": 142744.1451721346,
+          "standard_error": 24312.18777756415
+        },
+        "slope": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 4010742.5135506624,
+            "upper_bound": 4089974.054710261
+          },
+          "point_estimate": 4047511.12516477,
+          "standard_error": 20174.70941675288
+        },
+        "std_dev": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 187032.08963436668,
+            "upper_bound": 381311.3023611968
+          },
+          "point_estimate": 289131.8802948545,
+          "standard_error": 49695.34864098302
+        }
+      }
+    },
+    "bazoopy/Encode random 8KB": {
+      "baseline": "base",
+      "fullname": "base/bazoopy/Encode random 8KB",
+      "criterion_benchmark_v1": {
+        "group_id": "bazoopy",
+        "function_id": "Encode random 8KB",
+        "value_str": null,
+        "throughput": {
+          "Bytes": 8192,
+          "Elements": null
+        },
+        "full_id": "bazoopy/Encode random 8KB",
+        "directory_name": "bazoopy/Encode random 8KB"
+      },
+      "criterion_estimates_v1": {
+        "mean": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 503700.2830530203,
+            "upper_bound": 510531.6869088456
+          },
+          "point_estimate": 506844.1647865718,
+          "standard_error": 1747.6795410809016
+        },
+        "median": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 500512.99494949495,
+            "upper_bound": 503669.3903186274
+          },
+          "point_estimate": 501707.8019188808,
+          "standard_error": 832.2602752917961
+        },
+        "median_abs_dev": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 6490.422056783115,
+            "upper_bound": 10111.046020272495
+          },
+          "point_estimate": 8134.834836494517,
+          "standard_error": 854.161159472098
+        },
+        "slope": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 508179.56402356474,
+            "upper_bound": 518223.3150850439
+          },
+          "point_estimate": 512668.732435348,
+          "standard_error": 2572.47633763118
+        },
+        "std_dev": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 10474.377299599228,
+            "upper_bound": 23707.746155430435
+          },
+          "point_estimate": 17497.15901651014,
+          "standard_error": 3415.3522055533012
+        }
+      }
+    },
+    "bazoopy/Encode zeroes 64KB": {
+      "baseline": "base",
+      "fullname": "base/bazoopy/Encode zeroes 64KB",
+      "criterion_benchmark_v1": {
+        "group_id": "bazoopy",
+        "function_id": "Encode zeroes 64KB",
+        "value_str": null,
+        "throughput": {
+          "Bytes": 65536,
+          "Elements": null
+        },
+        "full_id": "bazoopy/Encode zeroes 64KB",
+        "directory_name": "bazoopy/Encode zeroes 64KB"
+      },
+      "criterion_estimates_v1": {
+        "mean": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 3013809.6866515693,
+            "upper_bound": 3038594.63678579
+          },
+          "point_estimate": 3025619.8405584185,
+          "standard_error": 6332.854231436398
+        },
+        "median": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 3004989.1511627906,
+            "upper_bound": 3025239.3389830505
+          },
+          "point_estimate": 3011093.5478554154,
+          "standard_error": 5234.509445227406
+        },
+        "median_abs_dev": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 33937.226514240196,
+            "upper_bound": 61280.6855868779
+          },
+          "point_estimate": 48496.48787665571,
+          "standard_error": 6950.898229396448
+        },
+        "slope": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 3009210.290930769,
+            "upper_bound": 3038135.3371771965
+          },
+          "point_estimate": 3022215.917153835,
+          "standard_error": 7393.054838520909
+        },
+        "std_dev": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 46801.0856526101,
+            "upper_bound": 80581.65743594998
+          },
+          "point_estimate": 63655.28355544696,
+          "standard_error": 8771.010774301367
+        }
+      }
+    },
+    "bazoopy/Encode zeroes 8KB": {
+      "baseline": "base",
+      "fullname": "base/bazoopy/Encode zeroes 8KB",
+      "criterion_benchmark_v1": {
+        "group_id": "bazoopy",
+        "function_id": "Encode zeroes 8KB",
+        "value_str": null,
+        "throughput": {
+          "Bytes": 8192,
+          "Elements": null
+        },
+        "full_id": "bazoopy/Encode zeroes 8KB",
+        "directory_name": "bazoopy/Encode zeroes 8KB"
+      },
+      "criterion_estimates_v1": {
+        "mean": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 371082.3576291516,
+            "upper_bound": 374055.9037976101
+          },
+          "point_estimate": 372420.9212171478,
+          "standard_error": 761.918906812665
+        },
+        "median": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 370007.9973194341,
+            "upper_bound": 371915.9869281046
+          },
+          "point_estimate": 370656.13723931543,
+          "standard_error": 434.50725242712485
+        },
+        "median_abs_dev": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 2690.493025365711,
+            "upper_bound": 4448.6826866151905
+          },
+          "point_estimate": 3853.470980190463,
+          "standard_error": 449.2756548375906
+        },
+        "slope": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 371115.24206866056,
+            "upper_bound": 373914.1088514589
+          },
+          "point_estimate": 372360.52961882495,
+          "standard_error": 712.670654095668
+        },
+        "std_dev": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 4044.6915310708264,
+            "upper_bound": 11073.812160217642
+          },
+          "point_estimate": 7654.565705330789,
+          "standard_error": 1872.8704549049455
         }
       }
     }
