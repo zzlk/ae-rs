@@ -7,26 +7,17 @@ const MAX_SYMBOLS: usize = 0x101;
 const MAX_PROBABILITY: usize = 0xFFFFFFFF;
 const SYMBOL_EOF: usize = 0x100;
 
-#[derive(Copy, Clone, Debug)]
-struct Symbol {
-    cumulative_count: usize,
-    count: usize,
-}
-
 #[derive(Debug)]
 struct SymbolTable {
     symbol_count: usize,
-    table: [Symbol; MAX_SYMBOLS],
+    table: [usize; MAX_SYMBOLS + 1],
 }
 
 impl SymbolTable {
     fn new() -> SymbolTable {
         let mut ret = SymbolTable {
             symbol_count: 0,
-            table: [Symbol {
-                cumulative_count: 0,
-                count: 0,
-            }; MAX_SYMBOLS],
+            table: [0; MAX_SYMBOLS + 1],
         };
 
         for i in 0..MAX_SYMBOLS {
@@ -37,13 +28,24 @@ impl SymbolTable {
     }
 
     fn increment_symbol(&mut self, symbol: usize) {
-        self.table[symbol].count += 1;
         self.symbol_count += 1;
 
-        for i in symbol..MAX_SYMBOLS - 1 {
-            self.table[i + 1].cumulative_count =
-                self.table[i].count + self.table[i].cumulative_count;
+        for i in symbol..MAX_SYMBOLS {
+            self.table[i + 1] += 1;
         }
+    }
+
+    fn get_symbol(&self, symbol: usize) -> (usize, usize) {
+        (self.table[symbol], self.table[symbol + 1])
+    }
+
+    fn find_symbol(&self, cumulative_value: usize) -> (usize, usize, usize) {
+        let mut symbol = MAX_SYMBOLS - 1;
+        while self.table[symbol] > cumulative_value {
+            symbol -= 1;
+        }
+
+        (symbol, self.table[symbol], self.table[symbol + 1])
     }
 }
 
@@ -78,37 +80,27 @@ impl<T: Write + fmt::Debug> Encoder<'_, T> {
         }
     }
 
-    fn calculate_symbol_range(&mut self, symbol: usize) {
-        assert!(self.high > self.low);
-
+    pub fn encode_next(&mut self, symbol: usize) -> Result<()> {
         let range = (self.high - self.low) as usize + 1;
 
-        let symbol_lower = self.symbols.table[symbol].cumulative_count;
-        let symbol_upper =
-            self.symbols.table[symbol].cumulative_count + self.symbols.table[symbol].count;
+        // should probably make this a part of the model.
+        let (symbol_low, symbol_high) = self.symbols.get_symbol(symbol);
 
-        // Now, based on this calculated range, we work out our new range within this range.
-        // Think of it as a sort of rescaling operation.
-        // We're also subtracting 1 from High because an infinite amount of 0xFFFF follows it, supposedly.
+        // rescale low and high so that the new low and high are proportional to the cumulative frequency in the model.
+        // for example if low = 0, high = 1, there's 2 symbols (A, B) with probability 1/3 and 2/3, then if we encode an A the
+        // next [low, high) should be [0, 1/3). If we encode a B then [low, high] should be [1/3rd, 1),
+        // except all of this is with integers, so there's +1 and -1 in various places to prevent truncation issues.
         self.high =
-            (self.low as usize + ((symbol_upper * range) / self.symbols.symbol_count) - 1) as u32;
-        self.low =
-            (self.low as usize + ((symbol_lower * range) / self.symbols.symbol_count)) as u32;
-
-        assert!(self.high > self.low);
-    }
-
-    pub fn encode_next(&mut self, symbol: usize) -> Result<()> {
-        // This function will calculate the variables 'high' and 'low' based on our symbol.
-        self.calculate_symbol_range(symbol);
+            (self.low as usize + ((symbol_high * range) / self.symbols.symbol_count) - 1) as u32;
+        self.low = (self.low as usize + ((symbol_low * range) / self.symbols.symbol_count)) as u32;
 
         // As high and low converge we want to write out their MSBs.
-        // more than 1 of the high bits of low and high can match, but we write out each one per bit.
         loop {
             if (self.high & 0x80000000) == (self.low & 0x80000000) {
                 self.bit_writer.write(self.low & 0x80000000 == 0x80000000)?;
 
-                // We need to deal with undeflowing bits here, to make sure that our MSB is shifted to the correct position.
+                // When we run out of precision, we remember how many bits are obliterated so that we don't run out of precision.
+                // Once we discover the true MSB then we can output that number of bits correctly.
                 while self.underflow != 0 {
                     self.bit_writer
                         .write((self.low & 0x80000000) != 0x80000000)?;
@@ -118,6 +110,13 @@ impl<T: Write + fmt::Debug> Encoder<'_, T> {
                 && (self.low & 0x40000000) == 0x40000000
             {
                 // We've run out of precision, begin implementing hacks.
+                // this is probably one of the trickiest parts.
+                // if low is converging on 0x7FFFFFF... and high is converging on 0x80000....
+                // then we don't know what bit to output because the MSB of low and high do not match yet.
+                // but if we keep going then we will run out of integer precision before the msb matches.
+                // so, we basically shift everything left and keep a counter of how many times we have done that.
+                // eventually either low will go above 0x7fff...  or high will go below 0x8000.... at that point we can output
+                // the MSB followed by <underflow> opposite bits
                 self.underflow += 1; // Must keep track of how many bits we obliterate.
                 self.low &= 0x3FFFFFFF;
                 self.high |= 0x40000000;
@@ -125,30 +124,22 @@ impl<T: Write + fmt::Debug> Encoder<'_, T> {
                 break;
             }
 
-            assert!(self.high > self.low);
-
             // Now that the MSB is gone, we shift it out of high and low.
             self.high = self.high << 1;
             self.low = self.low << 1;
 
-            assert!(self.high > self.low);
-
-            // Remember when we said that High has an infinite amount of 0xFFF following it?
+            // conceptually high has an infinite stream of 1 bits following it, and low has an infinite stream of 0 bits following it.
             self.high = self.high | 1;
 
-            assert!(self.high > self.low);
-
-            // However, the next shifted in MSBs might also match, hence the loop.
+            // The next shifted in MSBs might also match, so we loop.
         }
 
-        // We want to update our probability model now.
         self.symbols.increment_symbol(symbol);
 
         anyhow::Ok(())
     }
 
     pub fn encode_end(&mut self) -> Result<()> {
-        // Make sure we write an EOF in the stream otherwise disaster.
         self.encode_next(SYMBOL_EOF)?;
 
         self.underflow += 1;
@@ -186,46 +177,28 @@ impl<T: Read + fmt::Debug> Decoder<'_, T> {
         anyhow::Ok(decoder)
     }
 
-    fn calculate_code_range(&mut self) -> usize {
-        assert!(self.high > self.low);
-
+    pub fn decode_next(&mut self) -> Result<usize> {
+        // Decoding is almost identical to encoding except that we have a stream of already encoded bits that we have to deal with.
         let range = (self.high - self.low) as usize + 1;
 
-        let temp =
+        // This is essentially the major difference between encoding and decoding.
+        // In decoding we determine the symbol from the already encoded stream by where it lies in the range between high and low.
+        // in encoding we calculate the range directly as we are given the symbol.
+        let cumulative_value =
             ((self.code as usize - self.low as usize + 1) as usize * self.symbols.symbol_count - 1)
                 / range as usize;
 
-        // Convert from cumulative count value to a symbol value.
-        let mut symbol = MAX_SYMBOLS - 1;
-        while self.symbols.table[symbol].cumulative_count > temp {
-            symbol -= 1;
-        }
+        let (symbol, symbol_low, symbol_high) = self.symbols.find_symbol(cumulative_value);
 
-        let symbol_lower = self.symbols.table[symbol].cumulative_count;
-        let symbol_upper =
-            self.symbols.table[symbol].cumulative_count + self.symbols.table[symbol].count;
-
-        // Now, based on this calculated range, we work out our new range within this range.
-        // Think of it as a sort of rescaling operation.
-        // We're also subtracting 1 from High because an infinite amount of 0xFFFF follows it.
+        // The following is identical to encoding.
         self.high =
-            (self.low as usize + ((symbol_upper * range) / self.symbols.symbol_count) - 1) as u32;
-        self.low =
-            (self.low as usize + ((symbol_lower * range) / self.symbols.symbol_count)) as u32;
-
-        assert!(self.high > self.low);
-
-        symbol
-    }
-
-    pub fn decode_next(&mut self) -> Result<usize> {
-        // This function sets the values high and low!
-        let symbol = self.calculate_code_range();
+            (self.low as usize + ((symbol_high * range) / self.symbols.symbol_count) - 1) as u32;
+        self.low = (self.low as usize + ((symbol_low * range) / self.symbols.symbol_count)) as u32;
 
         loop {
             if (self.high & 0x80000000) == (self.low & 0x80000000) {
-                // We are basically duplicating our steps from the encode method.
-                // We have nothing to encode (we're decoding), so we do nothing, but this still needs to be here.
+                // Since we are decoding then there's nothing to do here.
+                // We need to preserve the condition because the second branch in this if statement has the assumption that the above is not true.
             } else if (self.high & 0xC0000000) == 0x80000000
                 && (self.low & 0x40000000) == 0x40000000
             {
@@ -244,22 +217,22 @@ impl<T: Read + fmt::Debug> Decoder<'_, T> {
             self.low = self.low << 1;
             self.code = self.code << 1;
 
-            // Remember when we said that High has an infinite amount of 0xFFF following it?
             self.high = self.high | 1; // There it is.
 
-            // When we were encoding, we had to narrow in on the range with lots of 0xFFFFs, but now, we can get the actual range,
-            // We don't want to read garbage data from off the end of the input buffer either.
+            // This is the other major difference from encoding.
+            // This is just reading the stream of bits from the encoded value, we don't have this while encoding.
             match self.bit_reader.read()? {
                 crate::bitio::ReadResult::Bit(r) => {
                     self.code |= if r { 1 } else { 0 };
                 }
                 crate::bitio::ReadResult::EOF => {
+                    // I think that when decoding a well-formed stream, the actual decoder never processes these bits
+                    // but for extremely small messages the decoder starts with 4 bytes of read data so this can actually be invoked.
                     self.code |= 1;
                 }
             }
-            assert!(self.high > self.low);
 
-            // However, the next shifted in MSBs might also match, hence the loop.
+            // The next shifted in MSBs might also match, so we loop.
         }
 
         // We want to update our probability model now.

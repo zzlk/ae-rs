@@ -1,0 +1,121 @@
+{
+  "name": "baseline",
+  "benchmarks": {
+    "bazoopy/Decode 64KB": {
+      "baseline": "baseline",
+      "fullname": "baseline/bazoopy/Decode 64KB",
+      "criterion_benchmark_v1": {
+        "group_id": "bazoopy",
+        "function_id": "Decode 64KB",
+        "value_str": null,
+        "throughput": {
+          "Bytes": 65536,
+          "Elements": null
+        },
+        "full_id": "bazoopy/Decode 64KB",
+        "directory_name": "bazoopy/Decode 64KB"
+      },
+      "criterion_estimates_v1": {
+        "mean": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 4331586.455419952,
+            "upper_bound": 5689013.218001804
+          },
+          "point_estimate": 4988726.400433139,
+          "standard_error": 346012.9966681123
+        },
+        "median": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 2967775.923587571,
+            "upper_bound": 3996967.2682926822
+          },
+          "point_estimate": 3363923.8738461537,
+          "standard_error": 283396.32908235845
+        },
+        "median_abs_dev": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 1067013.7176417927,
+            "upper_bound": 2395881.6301412936
+          },
+          "point_estimate": 1595561.470818798,
+          "standard_error": 361192.7877490591
+        },
+        "slope": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 2602963.316337344,
+            "upper_bound": 2894525.078431452
+          },
+          "point_estimate": 2729893.889200532,
+          "standard_error": 74229.71825277669
+        },
+        "std_dev": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 2887958.8868728024,
+            "upper_bound": 3958332.8581739375
+          },
+          "point_estimate": 3494120.789676422,
+          "standard_error": 273910.2773086818
+        }
+      }
+    },
+    "bazoopy/Encode 64KB": {
+      "baseline": "baseline",
+      "fullname": "baseline/bazoopy/Encode 64KB",
+      "criterion_benchmark_v1": {
+        "group_id": "bazoopy",
+        "function_id": "Encode 64KB",
+        "value_str": null,
+        "throughput": {
+          "Bytes": 65536,
+          "Elements": null
+        },
+        "full_id": "bazoopy/Encode 64KB",
+        "directory_name": "bazoopy/Encode 64KB"
+      },
+      "criterion_estimates_v1": {
+        "mean": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 2504607.9952380965,
+            "upper_bound": 2532170.011190476
+          },
+          "point_estimate": 2518293.6190476203,
+          "standard_error": 7029.660643832678
+        },
+        "median": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 2493439.619047619,
+            "upper_bound": 2524873.4285714286
+          },
+          "point_estimate": 2512332.666666667,
+          "standard_error": 7869.251093352169
+        },
+        "median_abs_dev": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 52673.811864852905,
+            "upper_bound": 88009.95843751103
+          },
+          "point_estimate": 68563.93008274763,
+          "standard_error": 9055.004458370866
+        },
+        "slope": null,
+        "std_dev": {
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower_bound": 60425.04970587687,
+            "upper_bound": 79520.15852019611
+          },
+          "point_estimate": 70562.05030336614,
+          "standard_error": 4878.883844445452
+        }
+      }
+    }
+  }
+}
