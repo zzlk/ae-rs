@@ -1,4 +1,4 @@
-sudo nice -n-10 sudo -u $(logname) cargo bench -- --measurement-time 20 -n
+sudo nice -n-10 sudo -u $(logname) cargo bench -- --measurement-time 30 -n
 echo "Benchmark Commit" >/tmp/txt
 echo "" >>/tmp/txt
 critcmp base.json new >> /tmp/txt
