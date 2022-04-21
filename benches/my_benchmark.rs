@@ -1,0 +1,37 @@
+use ae_rs::{Decoder, Encoder};
+use criterion::{black_box, criterion_group, criterion_main, Criterion, Throughput};
+
+fn criterion_benchmark(c: &mut Criterion) {
+    let mut g = c.benchmark_group("bazoopy");
+    g.throughput(Throughput::Bytes(64 * 1024 as u64));
+    g.bench_function("Encode 64KB", |b| {
+        let mut output = vec![0u8; 4 * 1024 * 1024];
+        let mut encoder = Encoder::new(output.as_mut_slice());
+        let x = black_box(37);
+        b.iter(move || {
+            for _ in 0..64 * 1024 {
+                encoder.encode_next(x).unwrap();
+            }
+        });
+    });
+    g.bench_function("Decode 64KB", |b| {
+        let mut output = vec![0u8; 4 * 1024 * 1024];
+        {
+            let mut encoder = Encoder::new(output.as_mut_slice());
+            let x = black_box(37);
+            for _ in 0..64 * 1024 {
+                encoder.encode_next(x).unwrap();
+            }
+        }
+        let mut decoder = Decoder::new(output.as_slice()).unwrap();
+        b.iter(move || {
+            for _ in 0..64 * 1024 {
+                decoder.decode_next().unwrap();
+            }
+        });
+    });
+    g.finish();
+}
+
+criterion_group!(benches, criterion_benchmark);
+criterion_main!(benches);

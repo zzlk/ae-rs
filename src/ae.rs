@@ -48,31 +48,27 @@ impl SymbolTable {
 }
 
 #[derive(Debug)]
-pub struct Encoder<T: Write> {
+pub struct Encoder<'a, T: Write> {
     high: u32,
     low: u32,
     underflow: usize,
 
     symbols: SymbolTable,
-    bit_writer: BitWriter<T>,
+    bit_writer: BitWriter<'a, T>,
 }
 
 #[derive(Debug)]
-pub struct Decoder<T: Read> {
+pub struct Decoder<'a, T: Read> {
     high: u32,
     low: u32,
     code: u32,
 
     symbols: SymbolTable,
-    bit_reader: BitReader<T>,
+    bit_reader: BitReader<'a, T>,
 }
 
-//-------------------------------------------------------------------------------------------------
-// calculate_symbol_range
-//	Calculates the high and low variables (global variables!!!) for use in encoding.
-//-------------------------------------------------------------------------------------------------
-impl<T: Write + fmt::Debug> Encoder<T> {
-    pub fn new(writer: T) -> Encoder<T> {
+impl<T: Write + fmt::Debug> Encoder<'_, T> {
+    pub fn new(writer: &mut T) -> Encoder<'_, T> {
         Encoder {
             high: MAX_PROBABILITY as u32,
             low: 0,
@@ -85,7 +81,7 @@ impl<T: Write + fmt::Debug> Encoder<T> {
     fn calculate_symbol_range(&mut self, symbol: usize) {
         assert!(self.high > self.low);
 
-        let range = (self.high - self.low) as usize + 1; // Range is just the difference between the two.
+        let range = (self.high - self.low) as usize + 1;
 
         let symbol_lower = self.symbols.table[symbol].cumulative_count;
         let symbol_upper =
@@ -103,11 +99,6 @@ impl<T: Write + fmt::Debug> Encoder<T> {
     }
 
     pub fn encode_next(&mut self, symbol: usize) -> Result<()> {
-        println!(
-            "low: {:08x}, high: {:08x}, underflow: {:08x}",
-            self.low, self.high, self.underflow
-        );
-
         // This function will calculate the variables 'high' and 'low' based on our symbol.
         self.calculate_symbol_range(symbol);
 
@@ -174,8 +165,8 @@ impl<T: Write + fmt::Debug> Encoder<T> {
     }
 }
 
-impl<T: Read + fmt::Debug> Decoder<T> {
-    pub fn new(reader: T) -> Result<Decoder<T>> {
+impl<T: Read + fmt::Debug> Decoder<'_, T> {
+    pub fn new(reader: &mut T) -> Result<Decoder<'_, T>> {
         let mut decoder = Decoder {
             high: 0xFFFFFFFF,
             low: 0,
@@ -198,20 +189,11 @@ impl<T: Read + fmt::Debug> Decoder<T> {
     fn calculate_code_range(&mut self) -> usize {
         assert!(self.high > self.low);
 
-        let range = (self.high - self.low) as usize + 1; // Range is just the difference between the two.
-
-        // let temp = ((self.code - self.low + 1) as usize * MAX_PROBABILITY - 1) / range as usize;
-        // println!("temp: {}", temp);
-        // let temp = ((temp + 1) * self.symbols.symbol_count) / MAX_PROBABILITY;
+        let range = (self.high - self.low) as usize + 1;
 
         let temp =
             ((self.code as usize - self.low as usize + 1) as usize * self.symbols.symbol_count - 1)
                 / range as usize;
-        //let temp = ((temp + 1) * self.symbols.symbol_count) / MAX_PROBABILITY;
-        println!(
-            "temp: {:08x}, self.code: {:08x}, self.low: {:08x}, self.symbol_count: {:08x}, range: {range:08x}",
-            temp, self.code, self.low, self.symbols.symbol_count
-        );
 
         // Convert from cumulative count value to a symbol value.
         let mut symbol = MAX_SYMBOLS - 1;
@@ -237,10 +219,6 @@ impl<T: Read + fmt::Debug> Decoder<T> {
     }
 
     pub fn decode_next(&mut self) -> Result<usize> {
-        println!(
-            "low: {:08x}, high: {:08x}, code: {:08x}-{:032b}",
-            self.low, self.high, self.code, self.code
-        );
         // This function sets the values high and low!
         let symbol = self.calculate_code_range();
 
@@ -295,110 +273,37 @@ impl<T: Read + fmt::Debug> Decoder<T> {
 mod test {
     use super::Decoder;
     use super::Encoder;
-    use crate::ae::SYMBOL_EOF;
-    use rand::Rng;
-    use rand::SeedableRng;
+    use super::SYMBOL_EOF;
+    use quickcheck_macros::quickcheck;
 
-    #[test]
-    fn single_symbol_streams() {
-        const COUNT: usize = 4;
-        let mut output = [0u8; 8192];
-
-        println!("\n\n\nencoding\n\n");
-        for symbol in 0..256 {
-            {
-                let mut encoder = Encoder::new(output.as_mut_slice());
-
-                for _ in 0..COUNT {
-                    encoder.encode_next(symbol).unwrap();
-                }
-                encoder.encode_end().unwrap();
-            }
-            //assert_eq!(output, [130, 194, 0, 0]);
-
-            println!("\n\n");
-            println!(
-                "{:02x}{:02x}{:02x}{:02x}{:02x}",
-                output[0], output[1], output[2], output[3], output[4]
-            );
-
-            println!("\n\n\ndecoding\n\n");
-            {
-                let mut decoder = Decoder::new(output.as_slice()).unwrap();
-
-                for _ in 0..COUNT {
-                    assert_eq!(decoder.decode_next().unwrap(), symbol);
-                }
-            }
-        }
-    }
-
-    #[test]
-    fn combinatorial() {
-        let mut output = [0u8; 8192];
-
-        println!("\n\n\nencoding\n\n");
-        for s3 in 0..256 {
-            for s2 in 0..256 {
-                for s1 in 0..256 {
-                    {
-                        let mut encoder = Encoder::new(output.as_mut_slice());
-                        encoder.encode_next(s1).unwrap();
-                        encoder.encode_next(s2).unwrap();
-                        encoder.encode_next(s3).unwrap();
-                        encoder.encode_end().unwrap();
-                    }
-                    //assert_eq!(output, [130, 194, 0, 0]);
-
-                    println!("\n\n");
-                    println!(
-                        "{:02x}{:02x}{:02x}{:02x}{:02x}",
-                        output[0], output[1], output[2], output[3], output[4]
-                    );
-
-                    println!("\n\n\ndecoding\n\n");
-                    {
-                        let mut decoder = Decoder::new(output.as_slice()).unwrap();
-                        assert_eq!(decoder.decode_next().unwrap(), s1);
-                        assert_eq!(decoder.decode_next().unwrap(), s2);
-                        assert_eq!(decoder.decode_next().unwrap(), s3);
-                        assert_eq!(decoder.decode_next().unwrap(), SYMBOL_EOF);
-                    }
-                }
-            }
-        }
-    }
-
-    #[test]
-    fn rando() {
-        const COUNT: usize = 80000;
-        let mut output = [0u8; 204800];
+    #[quickcheck]
+    fn can_read_and_write_same_bytes(input: Vec<u8>) {
+        let mut output = Vec::new();
+        let mut output2 = Vec::new();
 
         {
-            let mut rng = rand::rngs::StdRng::seed_from_u64(0);
-            let mut encoder = Encoder::new(output.as_mut_slice());
-
-            for i in 0..COUNT {
-                encoder.encode_next(rng.gen::<usize>() % 256).unwrap();
+            let mut encoder = Encoder::new(&mut output);
+            for s in &input {
+                encoder.encode_next(*s as usize).unwrap();
             }
             encoder.encode_end().unwrap();
         }
 
-        println!("\n\n");
-        println!(
-            "{:02x}{:02x}{:02x}{:02x}{:02x}",
-            output[0], output[1], output[2], output[3], output[4]
-        );
-        println!("\n\n");
-
         {
-            let mut rng = rand::rngs::StdRng::seed_from_u64(0);
-            let mut decoder = Decoder::new(output.as_slice()).unwrap();
+            let mut cursor = std::io::Cursor::new(&output);
+            let mut decoder = Decoder::new(&mut cursor).unwrap();
 
-            for i in 0..COUNT {
-                assert_eq!(decoder.decode_next().unwrap(), rng.gen::<usize>() % 256);
+            loop {
+                let s = decoder.decode_next().unwrap();
+
+                if s == SYMBOL_EOF {
+                    break;
+                }
+
+                output2.push(s as u8);
             }
-            assert_eq!(decoder.decode_next().unwrap(), SYMBOL_EOF);
         }
+
+        assert_eq!(input, output2);
     }
 }

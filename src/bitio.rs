@@ -2,15 +2,15 @@ use anyhow::Result;
 use std::io::{Read, Write};
 
 #[derive(Debug)]
-pub(crate) struct BitWriter<Writer: Write> {
-    writer: Writer,
+pub(crate) struct BitWriter<'a, Writer: Write> {
+    writer: &'a mut Writer,
     buffer_length: usize,
     buffer: u8,
 }
 
 #[derive(Debug)]
-pub(crate) struct BitReader<Reader: Read> {
-    reader: Reader,
+pub(crate) struct BitReader<'a, Reader: Read> {
+    reader: &'a mut Reader,
     buffer_length: usize,
     buffer: u8,
 }
@@ -21,8 +21,8 @@ pub(crate) enum ReadResult {
     Bit(bool),
 }
 
-impl<T: Read> BitReader<T> {
-    pub(crate) fn new(reader: T) -> BitReader<T> {
+impl<T: Read> BitReader<'_, T> {
+    pub(crate) fn new(reader: &mut T) -> BitReader<T> {
         BitReader {
             reader,
             buffer_length: 0,
@@ -47,8 +47,8 @@ impl<T: Read> BitReader<T> {
     }
 }
 
-impl<T: Write> BitWriter<T> {
-    pub(crate) fn new(writer: T) -> BitWriter<T> {
+impl<T: Write> BitWriter<'_, T> {
+    pub(crate) fn new(writer: &mut T) -> BitWriter<'_, T> {
         BitWriter {
             writer,
             buffer_length: 0,
@@ -84,12 +84,38 @@ impl<T: Write> BitWriter<T> {
 mod test {
     use super::ReadResult;
     use super::{BitReader, BitWriter};
-    use rand::{Rng, SeedableRng};
+    use quickcheck_macros::quickcheck;
+
+    #[quickcheck]
+    fn can_read_and_write_same_data(input: Vec<u8>) {
+        let mut output = Vec::new();
+
+        {
+            let mut writer = BitWriter::new(&mut output);
+            let mut cursor = std::io::Cursor::new(&input);
+            let mut reader = BitReader::new(&mut cursor);
+
+            for _ in 0..input.len() * 8 {
+                writer
+                    .write(match reader.read().unwrap() {
+                        ReadResult::EOF => panic!(),
+                        ReadResult::Bit(r) => r,
+                    })
+                    .unwrap();
+            }
+
+            writer.flush().unwrap();
+        }
+
+        assert_eq!(input, output);
+    }
 
     #[test]
-    fn test_reader() {
-        let src: &[u8] = &[0b11110000, 0b00001111];
-        let mut reader = BitReader::new(src);
+    fn test_in_memory_representation_reader() {
+        // The bits are written MSB first. I'm not sure what the right way is here, either way works.
+        let src = vec![0b11110000];
+        let mut cursor = std::io::Cursor::new(src);
+        let mut reader = BitReader::new(&mut cursor);
 
         assert_eq!(reader.read().unwrap(), ReadResult::Bit(true));
         assert_eq!(reader.read().unwrap(), ReadResult::Bit(true));
@@ -99,15 +125,6 @@ mod test {
         assert_eq!(reader.read().unwrap(), ReadResult::Bit(false));
         assert_eq!(reader.read().unwrap(), ReadResult::Bit(false));
         assert_eq!(reader.read().unwrap(), ReadResult::Bit(false));
-
-        assert_eq!(reader.read().unwrap(), ReadResult::Bit(false));
-        assert_eq!(reader.read().unwrap(), ReadResult::Bit(false));
-        assert_eq!(reader.read().unwrap(), ReadResult::Bit(false));
-        assert_eq!(reader.read().unwrap(), ReadResult::Bit(false));
-        assert_eq!(reader.read().unwrap(), ReadResult::Bit(true));
-        assert_eq!(reader.read().unwrap(), ReadResult::Bit(true));
-        assert_eq!(reader.read().unwrap(), ReadResult::Bit(true));
-        assert_eq!(reader.read().unwrap(), ReadResult::Bit(true));
 
         assert_eq!(reader.read().unwrap(), ReadResult::EOF);
         assert_eq!(reader.read().unwrap(), ReadResult::EOF);
@@ -115,10 +132,11 @@ mod test {
 
     #[test]
     fn test_writer() {
-        let mut src = [0u8; 2];
+        // The bits are written MSB first. I'm not sure what the right way is here, either way works.
+        let mut output = Vec::new();
 
         {
-            let mut writer = BitWriter::new(src.as_mut_slice());
+            let mut writer = BitWriter::new(&mut output);
 
             writer.write(true).unwrap();
             writer.write(true).unwrap();
@@ -129,44 +147,8 @@ mod test {
             writer.write(false).unwrap();
             writer.write(false).unwrap();
             writer.write(false).unwrap();
-
-            writer.write(false).unwrap();
-            writer.write(false).unwrap();
-            writer.write(false).unwrap();
-            writer.write(false).unwrap();
-
-            writer.write(true).unwrap();
-            writer.write(true).unwrap();
-            writer.write(true).unwrap();
-            writer.write(true).unwrap();
         }
 
-        assert_eq!(src, [0b11110000, 0b00001111]);
-    }
-
-    #[test]
-    fn test_random() {
-        const LENGTH: usize = 32768;
-        let mut output = [0u8; LENGTH];
-
-        {
-            let mut rng = rand::rngs::StdRng::seed_from_u64(0);
-            let mut writer = BitWriter::new(output.as_mut_slice());
-
-            for _ in 0..LENGTH * 8 {
-                writer.write(rng.gen::<bool>()).unwrap();
-            }
-
-            writer.flush().unwrap();
-        }
-
-        {
-            let mut rng = rand::rngs::StdRng::seed_from_u64(0);
-            let mut reader = BitReader::new(output.as_slice());
-
-            for _ in 0..LENGTH * 8 {
-                assert_eq!(reader.read().unwrap(), ReadResult::Bit(rng.gen::<bool>()));
-            }
-        }
+        assert_eq!(output, [0b11110000]);
     }
 }

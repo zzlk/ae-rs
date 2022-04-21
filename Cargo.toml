@@ -10,6 +10,15 @@ anyhow = { version = "*", features = ["backtrace"] }
 tracing = "*"
 rand = "*"
 
+[dev-dependencies]
+criterion = { version = "*", features = ["html_reports"] }
+quickcheck = "*"
+quickcheck_macros = "*"
+
+[[bench]]
+name = "my_benchmark"
+harness = false
+
 [profile.release]
 opt-level = 3
 debug = 1
